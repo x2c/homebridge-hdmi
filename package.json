@@ -1,0 +1,23 @@
+{
+  "name": "homebridge-hdmi",
+  "version": "0.0.1",
+  "description": "hdmi control for homebridge: https://github.com/nfarina/homebridge",
+  "license": "ISC",
+  "keywords": [
+    "homebridge-plugin"
+  ],
+
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/x2c/homebridge-hdmi.git"
+  },
+
+  "engines": {
+    "node": ">=0.12.0",
+    "homebridge": ">=0.2.0"
+  },
+
+  "dependencies": {
+    "nodecec" : ">=0.0.3"
+  }
+}

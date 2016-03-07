@@ -2,7 +2,19 @@
 var Service, Characteristic;
 var NodeCEC = require('nodecec');
 var cec = new NodeCEC();
-var deviceId;
+// var deviceId = {
+// 	'0': {'name':'TV','status':0},
+// 	'1': {'name':'Unknown','status':0},
+// 	'2': {'name':'Unknown','status':0},
+// 	'3': {'name':'Unknown','status':0},
+// 	'4': {'name':'CONSOLE','status':0},
+// 	'5': {'name':'AMP','status':0},
+// 	'8': {'name':'Unknown','status':0}
+// 	}
+// ;
+var deviceId = {};
+
+
 
 module.exports = function(homebridge) {
     Service = homebridge.hap.Service;
@@ -14,10 +26,6 @@ module.exports = function(homebridge) {
 };
 
 
-/*****************
-TV Accessory
-******************/
-
 function TvAccessory(log, config) {
     
     this.service = new Service.Switch('TV');
@@ -25,27 +33,25 @@ function TvAccessory(log, config) {
         .getCharacteristic(Characteristic.On)
         .on('get', this.getOn.bind(this))
         .on('set', this.setOn.bind(this));
-
-    deviceId[0] = 0;
 }
 
 
 TvAccessory.prototype.getOn = function(callback) {
 
-		var state = (deviceId[0] == 1 ? 'on' : 'off');
+		var state = (deviceId[0].status == 1 ? 'on' : 'off');
 		callback(null, state);
 }
 
 TvAccessory.prototype.setOn = function(on, callback) {
 	
-	if(deviceId[0]) {
+	if(deviceId[0].status == 0) {
 		console.log('Turning TV on');
 		cec.send('on 0');
-		deviceId[0] = 1;
+		deviceId[0].status = 1;
 	} else {
 		console.log('Turning TV off');
 		cec.send('standby 0');
-		deviceId[0] = 0;
+		deviceId[0].status = 0;
 	}
 	
 	callback(null);
@@ -66,38 +72,32 @@ TvAccessory.prototype.getServices = function() {
 };
 
 
-/*****************
-Amp Accessory
-******************/
-
 function AmpAccessory(log, config) {
     
-    this.service = new Service.Switch('TV');
+    this.service = new Service.Switch('AMP');
     this.service
         .getCharacteristic(Characteristic.On)
         .on('get', this.getOn.bind(this))
         .on('set', this.setOn.bind(this));
-
-    deviceId[4] = 0;
 }
 
 
 AmpAccessory.prototype.getOn = function(callback) {
 
-		var state = (deviceId[4] == 1 ? 'on' : 'off');
+		var state = (deviceId[5].status == 1 ? 'on' : 'off');
 		callback(null, state);
 }
 
 AmpAccessory.prototype.setOn = function(on, callback) {
 	
-	if(deviceId[4) {
-		console.log('Turning TV on');
-		cec.send('on 0');
-		deviceId[4] = 1;
+	if(deviceId[5].status == 0) {
+		console.log('Turning AMP on');
+		cec.send('on 5');
+		deviceId[5].status = 1;
 	} else {
-		console.log('Turning TV off');
-		cec.send('standby 0');
-		deviceId[4] = 0;
+		console.log('Turning AMP off');
+		cec.send('standby 5');
+		deviceId[5].status = 0;
 	}
 	
 	callback(null);
@@ -117,12 +117,6 @@ AmpAccessory.prototype.getServices = function() {
     return [this.service, this.getInformationService()];
 };
 
-
-
-/*****************
-CEC client wrapper
-******************/
-
 function CECInit() {
 
 	// start cec connection
@@ -130,11 +124,13 @@ function CECInit() {
 
 	cec.on('ready', function(data) {
 	    console.log("HDMI ready...");
+	    cec.send('scan');
 	});
 
 	cec.on('status', function(data) {
-	   //deviceId[data.id] = (data.to == 'on' ? 1 : 0 );
+	   deviceId[data.id] = { 'name':'TV','status': (data.to == '\'on\'' ? 1 : 0 ) } ;
 	   console.log("Device ID [" + data.id + "] changed from " + data.from + " to " + data.to); 
+	   console.log(deviceId);
 	});
 
 	cec.on('key', function(data) {
@@ -154,3 +150,7 @@ function CECInit() {
 
 // get tv status
 // echo 'pow 0' | cec-client -t p -p 1 -d 1 -s | tail -n1 | grep 'power' | awk '{print $3}'
+
+// scan for all devices
+// echo "scan" | cec-client -s
+// echo "scan" | cec-client -s -d 1

@@ -18,6 +18,6 @@
   },
 
   "dependencies": {
-    "nodecec" : ">=0.0.3"
+    "nodecec": ">=0.0.3"
   }
 }

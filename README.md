@@ -16,8 +16,12 @@ Configuration sample:
  ```
 "accessories": [
     {
-        "accessory": "HDMI",
-        "name": "TV"
+        "accessory": "TV",
+        "name": "Television"
+    },
+    {
+        "accessory": "AMP",
+        "name": "Amplifier"
     }
 ]
 ```

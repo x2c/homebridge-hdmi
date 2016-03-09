@@ -16,7 +16,6 @@ module.exports = function(homebridge) {
 
 
 function TvAccessory(log, config) {
-
     this.service = new Service.Switch('TV');
     this.service
         .getCharacteristic(Characteristic.On)
@@ -25,24 +24,22 @@ function TvAccessory(log, config) {
 }
 
 TvAccessory.prototype.getOn = function(callback) {
-
-		var state = (devices[0].status == 1 ? 'on' : 'off');
-		callback(null, state);
+    var state = (devices[0].status == 1 ? 'on' : 'off');
+    callback(null, state);
 }
 
 TvAccessory.prototype.setOn = function(on, callback) {
-	
-	if(devices[0].status == 0) {
-		console.log('Turning TV on');
-		cec.send('on 0');
-		devices[0].status = 1;
-	} else {
-		console.log('Turning TV off');
-		cec.send('standby 0');
-		devices[0].status = 0;
-	}
-	
-	callback(null);
+    if (devices[0].status == 0) {
+        console.log('Turning TV on');
+        cec.send('on 0');
+        devices[0].status = 1;
+    } else {
+        console.log('Turning TV off');
+        cec.send('standby 0');
+        devices[0].status = 0;
+    }
+
+    callback(null);
 }
 
 TvAccessory.prototype.getInformationService = function() {
@@ -61,7 +58,6 @@ TvAccessory.prototype.getServices = function() {
 
 
 function AmpAccessory(log, config) {
-    
     this.service = new Service.Switch('AMP');
     this.service
         .getCharacteristic(Characteristic.On)
@@ -70,24 +66,22 @@ function AmpAccessory(log, config) {
 }
 
 AmpAccessory.prototype.getOn = function(callback) {
-
-		var state = (devices[5].status == 1 ? 'on' : 'off');
-		callback(null, state);
+    var state = (devices[5].status == 1 ? 'on' : 'off');
+    callback(null, state);
 }
 
 AmpAccessory.prototype.setOn = function(on, callback) {
-	
-	if(devices[5].status == 0) {
-		console.log('Turning AMP on');
-		cec.send('on 5');
-		devices[5].status = 1;
-	} else {
-		console.log('Turning AMP off');
-		cec.send('standby 5');
-		devices[5].status = 0;
-	}
-	
-	callback(null);
+    if (devices[5].status == 0) {
+        console.log('Turning AMP on');
+        cec.send('on 5');
+        devices[5].status = 1;
+    } else {
+        console.log('Turning AMP off');
+        cec.send('standby 5');
+        devices[5].status = 0;
+    }
+
+    callback(null);
 }
 
 AmpAccessory.prototype.getInformationService = function() {
@@ -105,25 +99,24 @@ AmpAccessory.prototype.getServices = function() {
 };
 
 function CECInit() {
+    cec.start();
 
-	cec.start();
+    cec.on('ready', function(data) {
+        console.log("HDMI ready...");
+        cec.send('scan');
+    });
 
-	cec.on('ready', function(data) {
-	    console.log("HDMI ready...");
-	    cec.send('scan');
-	});
+    cec.on('status', function(data) {
+        devices[data.id].status = (data.to == '\'on\'' ? 1 : 0);
+        console.log("Device [" + devices[data.id].name + "] changed from " + data.from + " to " + data.to);
+    });
 
-	cec.on('status', function(data) {
-	   devices[data.id].status = (data.to == '\'on\'' ? 1 : 0 );
-	   console.log("Device [" + devices[data.id].name + "] changed from " + data.from + " to " + data.to); 
-	});
+    cec.on('key', function(data) {
+        console.log(data.name);
+    });
 
-	cec.on('key', function(data) {
-	    console.log(data.name);
-	});
-
-	cec.on('close', function(code) {
-	    process.exit(0);
-	});
+    cec.on('close', function(code) {
+        process.exit(0);
+    });
 
 }

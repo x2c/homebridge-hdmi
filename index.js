@@ -107,7 +107,7 @@ function CECInit() {
     });
 
     cec.on('status', function(data) {
-        devices[data.id].status = (data.to == '\'on\'' ? 1 : 0);
+        devices[data.id].status = ((data.to == '\'on\''  || typeof data.to  == "undefined") ? 1 : 0);
         console.log("Device [" + devices[data.id].name + "] changed from " + data.from + " to " + data.to);
     });
 

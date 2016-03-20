@@ -17,7 +17,7 @@ Configuration sample:
 "accessories": [
     {
         "accessory": "TV",
-        "name": "Television"
+        "name": "TV"
     },
     {
         "accessory": "AMP",
@@ -25,4 +25,10 @@ Configuration sample:
     }
 ]
 ```
+
+# Example Siri commands
+"Hey Siri, turn the TV on"
+"Hey Siri, turn the TV off"
+"Hey Siri, turn the Amplifier on"
+"Hey Siri, turn the Amplifier off"
 

@@ -16,7 +16,7 @@ module.exports = function(homebridge) {
 
 
 function TvAccessory(log, config) {
-    this.service = new Service.Switch('TV');
+    this.service = new Service.Switch(config["name"]);
     this.service
         .getCharacteristic(Characteristic.On)
         .on('get', this.getOn.bind(this))
@@ -24,16 +24,17 @@ function TvAccessory(log, config) {
 }
 
 TvAccessory.prototype.getOn = function(callback) {
-    var state = (devices[0].status == 1 ? 'on' : 'off');
+    var state = (devices[0].status == 1 ? true : false);
     callback(null, state);
 }
 
 TvAccessory.prototype.setOn = function(on, callback) {
-    if (devices[0].status == 0) {
+    if (devices[0].status == 0 && on) {
         console.log('Turning TV on');
         cec.send('on 0');
         devices[0].status = 1;
-    } else {
+    }
+    if (devices[0].status == 1 && !on) {
         console.log('Turning TV off');
         cec.send('standby 0');
         devices[0].status = 0;
@@ -58,7 +59,7 @@ TvAccessory.prototype.getServices = function() {
 
 
 function AmpAccessory(log, config) {
-    this.service = new Service.Switch('AMP');
+    this.service = new Service.Switch(config["name"]);
     this.service
         .getCharacteristic(Characteristic.On)
         .on('get', this.getOn.bind(this))
@@ -66,16 +67,17 @@ function AmpAccessory(log, config) {
 }
 
 AmpAccessory.prototype.getOn = function(callback) {
-    var state = (devices[5].status == 1 ? 'on' : 'off');
+    var state = (devices[5].status == 1 ? true : false);
     callback(null, state);
 }
 
 AmpAccessory.prototype.setOn = function(on, callback) {
-    if (devices[5].status == 0) {
+    if (devices[5].status == 0 && on) {
         console.log('Turning AMP on');
         cec.send('on 5');
         devices[5].status = 1;
-    } else {
+    }
+    if (devices[5].status == 1 && !on) {
         console.log('Turning AMP off');
         cec.send('standby 5');
         devices[5].status = 0;
